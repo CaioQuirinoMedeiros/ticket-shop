@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from 'express'
 
 import AppError from '../errors/AppError'
+import DatabaseError from '../errors/DatabaseError'
+import ValidationError from '../errors/ValidationError'
 
 export const errorHandler = (
   error: Error,
@@ -8,15 +10,28 @@ export const errorHandler = (
   response: Response,
   next: NextFunction
 ) => {
-  console.log('Something went wrong', { error })
+  
   if (error instanceof AppError) {
+    console.log('Application internal error', { error })
     return response
-      .status(error.statusCode)
-      .send({ status: error.statusCode, message: error.message })
+    .status(error.statusCode)
+    .send({ subject: 'Application internal error', message: error.message })
+  }
+  if (error instanceof ValidationError) {
+    console.log('ValidationError', { error })
+    return response
+    .status(400)
+    .send({ subject: 'Validation error', message: error.message })
+  }
+  if (error instanceof DatabaseError) {
+    console.log('Database error', { error })
+    return response
+      .status(500)
+      .send({ subject: 'Database connection error', message: error.message })
   }
 
   return response.status(500).send({
-    status: 'error',
-    message: 'Internal server error'
+    subject: 'Unkown error',
+    message: 'Sorry, something went wrong'
   })
 }
