@@ -3,11 +3,14 @@ class AppError extends Error {
 
   public readonly statusCode: number
 
-  constructor(message: string, statusCode = 400) {
+  public readonly originalError?: any
+
+  constructor(message: string, statusCode = 400, error?: any) {
     super()
 
     this.message = message
     this.statusCode = statusCode
+    this.originalError = error
 
     Object.setPrototypeOf(this, AppError.prototype)
   }

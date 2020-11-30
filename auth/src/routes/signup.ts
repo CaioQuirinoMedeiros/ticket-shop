@@ -1,7 +1,8 @@
 import express, { Request, Response } from 'express'
 import { body, validationResult } from 'express-validator'
 
-import AppError from '../errors/AppError'
+import ValidationError from '../errors/ValidationError'
+import DatabaseError from '../errors/DatabaseError'
 const router = express.Router()
 
 router.post(
@@ -17,10 +18,13 @@ router.post(
     const errors = validationResult(request)
 
     if (!errors.isEmpty()) {
-      throw new AppError(errors.array()[0].msg)
+      throw new ValidationError(errors.array())
     }
 
     const { email, password } = request.body
+    if (Math.random() > 0.5) {
+      throw new DatabaseError()
+    }
 
     console.log('Creating user...')
     return response.send({ email, password })

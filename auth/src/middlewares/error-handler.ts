@@ -8,15 +8,11 @@ export const errorHandler = (
   response: Response,
   next: NextFunction
 ) => {
-  console.log('Something went wrong', {
-    error,
-    errorMessage: error.message,
-    errorName: error.name
-  })
+  console.log('Something went wrong', { error })
   if (error instanceof AppError) {
     return response
       .status(error.statusCode)
-      .send({ status: 'error', message: error.message })
+      .send({ status: error.statusCode, message: error.message })
   }
 
   return response.status(500).send({

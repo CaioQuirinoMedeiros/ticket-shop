@@ -4,7 +4,7 @@ import AppError from './AppError'
 
 class ValidationError extends AppError {
   constructor(errors: ExpressValidatorError[]) {
-    super(errors[0].msg, 400)
+    super(errors[0].msg, 400, errors)
 
     Object.setPrototypeOf(this, ValidationError.prototype)
   }
