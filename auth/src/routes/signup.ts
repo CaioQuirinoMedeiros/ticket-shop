@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express'
 import { body, validationResult } from 'express-validator'
 
+import AppError from '../errors/AppError'
 const router = express.Router()
 
 router.post(
@@ -16,7 +17,7 @@ router.post(
     const errors = validationResult(request)
 
     if (!errors.isEmpty()) {
-      return response.status(400).send({ errors: errors.array() })
+      throw new AppError(errors.array()[0].msg)
     }
 
     const { email, password } = request.body
