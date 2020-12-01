@@ -1,8 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 
-import AppError from '../errors/AppError'
-import DatabaseError from '../errors/DatabaseError'
-import ValidationError from '../errors/ValidationError'
+import { CustomError } from '../errors/CustomError'
 
 export const errorHandler = (
   error: Error,
@@ -10,24 +8,9 @@ export const errorHandler = (
   response: Response,
   next: NextFunction
 ) => {
-  
-  if (error instanceof AppError) {
-    console.log('Application internal error', { error })
-    return response
-    .status(error.statusCode)
-    .send({ subject: 'Application internal error', message: error.message })
-  }
-  if (error instanceof ValidationError) {
-    console.log('ValidationError', { error })
-    return response
-    .status(400)
-    .send({ subject: 'Validation error', message: error.message })
-  }
-  if (error instanceof DatabaseError) {
-    console.log('Database error', { error })
-    return response
-      .status(500)
-      .send({ subject: 'Database connection error', message: error.message })
+  if (error instanceof CustomError) {
+    console.log(error.serializedError?.subject, { error })
+    return response.status(error.statusCode).send(error.serializedError)
   }
 
   return response.status(500).send({

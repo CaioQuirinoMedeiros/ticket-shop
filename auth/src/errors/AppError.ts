@@ -1,4 +1,6 @@
-class AppError extends Error {
+import { CustomError } from './CustomError'
+
+class AppError extends CustomError {
   public readonly statusCode: number
 
   public readonly originalError?: any
@@ -10,6 +12,13 @@ class AppError extends Error {
     this.originalError = error
 
     Object.setPrototypeOf(this, AppError.prototype)
+  }
+
+  get serializedError() {
+    return {
+      subject: 'Application internal error',
+      message: this.message
+    }
   }
 }
 

@@ -1,14 +1,23 @@
-import AppError from './AppError'
+import { CustomError } from './CustomError'
 
-class DatabaseError extends Error {
-  public readonly originalError?: Error
+class DatabaseError extends CustomError {
+  public readonly statusCode = 500
 
-  constructor(message: string, error?: Error) {
+  public readonly originalError?: any
+
+  constructor(message = 'Sorry, we are having connection issues', error?: any) {
     super(message)
 
     this.originalError = error
 
     Object.setPrototypeOf(this, DatabaseError.prototype)
+  }
+
+  get serializedError() {
+    return {
+      subject: 'Database connection error',
+      message: this.message
+    }
   }
 }
 
