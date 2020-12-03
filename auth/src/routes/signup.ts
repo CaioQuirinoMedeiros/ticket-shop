@@ -3,6 +3,9 @@ import { body, validationResult } from 'express-validator'
 
 import ValidationError from '../errors/ValidationError'
 import DatabaseError from '../errors/DatabaseError'
+import { User } from '../models/user'
+import AppError from '../errors/AppError'
+
 const router = express.Router()
 
 router.post(
@@ -14,7 +17,7 @@ router.post(
       max: 24
     })
   ],
-  (request: Request, response: Response) => {
+  async (request: Request, response: Response) => {
     const errors = validationResult(request)
 
     if (!errors.isEmpty()) {
@@ -22,12 +25,19 @@ router.post(
     }
 
     const { email, password } = request.body
-    if (Math.random() > 0.5) {
-      throw new DatabaseError()
+
+    const existingUser = await User.findOne({ email })
+
+    if (existingUser) {
+      console.log({ existingUser })
+      throw new AppError('Email already in use', 403)
     }
 
-    console.log('Creating user...')
-    return response.send({ email, password })
+    const user = new User({ email, password })
+
+    await user.save()
+
+    return response.status(201).send({ user })
   }
 )
 

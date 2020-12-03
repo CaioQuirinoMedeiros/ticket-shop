@@ -1,8 +1,14 @@
 import mongoose from 'mongoose'
 
+import { Password } from '../services/password'
+
 interface UserAttrs {
   email: string
   password: string
+}
+
+interface UserDoc extends mongoose.Document, UserAttrs {
+  metodoNovo(): void
 }
 
 const userSchema = new mongoose.Schema({
@@ -16,10 +22,24 @@ const userSchema = new mongoose.Schema({
   }
 })
 
-const User = mongoose.model('User', userSchema)
+userSchema.pre('save', async function () {
+  if (this.isModified('password')) {
+    const hashed = await Password.toHash(this.get('password'))
+    this.set('password', hashed)
+  }
+})
 
-const buildUser = (attrs: UserAttrs) => {
-  return new User(attrs)
+userSchema.static('metodoNovo', (params: any) => {
+  console.log('params', params)
+  console.log('opaaa')
+})
+
+const UserModel = mongoose.model<UserDoc>('User', userSchema)
+
+class User extends UserModel {
+  constructor(attrs: UserAttrs) {
+    super(attrs)
+  }
 }
 
-export { User, buildUser }
+export { User }
