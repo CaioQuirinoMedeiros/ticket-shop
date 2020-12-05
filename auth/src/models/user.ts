@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+import mongoose, { ToObjectOptions } from 'mongoose'
 
 import { Password } from '../services/password'
 
@@ -21,6 +21,15 @@ const userSchema = new mongoose.Schema({
     required: true
   }
 })
+
+userSchema.set('toJSON', {
+  versionKey: false,
+  transform(doc: mongoose.Document, ret: any) {
+    ret.id = ret._id
+    delete ret._id
+    delete ret.password
+  }
+} as ToObjectOptions)
 
 userSchema.pre('save', async function () {
   if (this.isModified('password')) {
