@@ -1,10 +1,9 @@
 import express, { Request, Response } from 'express'
-import { body, validationResult } from 'express-validator'
+import { body } from 'express-validator'
 import jwt from 'jsonwebtoken'
 
-import ValidationError from '../errors/ValidationError'
-import DatabaseError from '../errors/DatabaseError'
 import { User } from '../models/user'
+import { validateRequest } from '../middlewares/validate-request'
 import AppError from '../errors/AppError'
 import NotFoundError from '../errors/NotFoundError'
 import { Password } from '../services/password'
@@ -17,13 +16,8 @@ router.post(
     body('email', 'E-mail must be valid').isEmail(),
     body('password', 'Provide your password').trim().notEmpty()
   ],
+  validateRequest,
   async (request: Request, response: Response) => {
-    const errors = validationResult(request)
-
-    if (!errors.isEmpty()) {
-      throw new ValidationError(errors.array())
-    }
-
     const { email, password } = request.body
 
     const user = await User.findOne({ email })

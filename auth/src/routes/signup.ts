@@ -1,9 +1,8 @@
 import express, { Request, Response } from 'express'
-import { body, validationResult } from 'express-validator'
+import { body } from 'express-validator'
 import jwt from 'jsonwebtoken'
 
-import ValidationError from '../errors/ValidationError'
-import DatabaseError from '../errors/DatabaseError'
+import { validateRequest } from '../middlewares/validate-request'
 import { User } from '../models/user'
 import AppError from '../errors/AppError'
 
@@ -18,13 +17,8 @@ router.post(
       max: 24
     })
   ],
+  validateRequest,
   async (request: Request, response: Response) => {
-    const errors = validationResult(request)
-
-    if (!errors.isEmpty()) {
-      throw new ValidationError(errors.array())
-    }
-
     const { email, password } = request.body
 
     const existingUser = await User.findOne({ email })
