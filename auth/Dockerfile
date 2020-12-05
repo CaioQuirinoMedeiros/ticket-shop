@@ -1,9 +1,10 @@
 FROM node:alpine
 ENV CI=true
- 
+
 WORKDIR /app
 COPY package.json .
-RUN npm install
+RUN yarn install --only=prod
 COPY . .
- 
-CMD ["yarn", "start"]
+RUN yarn build
+
+CMD ["yarn", "dev"]
