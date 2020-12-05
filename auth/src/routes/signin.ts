@@ -23,13 +23,13 @@ router.post(
     const user = await User.findOne({ email })
 
     if (!user) {
-      throw new NotFoundError('User not found')
+      throw new AppError('Invalid credentials')
     }
 
     const passwordMatch = await Password.compare(user.password, password)
 
     if (!passwordMatch) {
-      throw new AppError('Invalid credentials', 403)
+      throw new AppError('Invalid credentials')
     }
 
     const userJWT = jwt.sign(
@@ -39,7 +39,7 @@ router.post(
 
     request.session = { jwt: userJWT }
 
-    return response.status(200).send({ user })
+    return response.status(200).send(user)
   }
 )
 

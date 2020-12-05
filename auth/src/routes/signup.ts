@@ -39,7 +39,7 @@ router.post(
 
     request.session = { jwt: userJWT }
 
-    return response.status(201).send({ user })
+    return response.status(201).send(user)
   }
 )
 
