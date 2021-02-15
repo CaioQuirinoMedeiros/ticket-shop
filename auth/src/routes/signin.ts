@@ -28,12 +28,6 @@ router.post(
 
     const passwordMatch = await Password.compare(user.password, password)
 
-    console.log({
-      password,
-      'user.password': user.password,
-      passwordMatch
-    })
-
     if (!passwordMatch) {
       throw new AppError('Invalid credentials')
     }

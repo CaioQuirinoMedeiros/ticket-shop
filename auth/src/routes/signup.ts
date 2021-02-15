@@ -24,7 +24,6 @@ router.post(
     const existingUser = await User.findOne({ email })
 
     if (existingUser) {
-      console.log({ existingUser })
       throw new AppError('Email already in use', 403)
     }
 
