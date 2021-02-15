@@ -22,7 +22,6 @@ beforeEach(async () => {
   try {
     await Promise.all(
       Object.keys(collections).map((collection) => {
-        console.log('aquii', collection, collections[collection])
         return mongoose.connection.dropCollection(collection)
       })
     )

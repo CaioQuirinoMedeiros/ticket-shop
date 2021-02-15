@@ -7,9 +7,7 @@ interface UserAttrs {
   password: string
 }
 
-interface UserDoc extends mongoose.Document, UserAttrs {
-  metodoNovo(): void
-}
+interface UserDoc extends mongoose.Document, UserAttrs {}
 
 const userSchema = new mongoose.Schema({
   email: {
@@ -36,11 +34,6 @@ userSchema.pre('save', async function () {
     const hashed = await Password.toHash(this.get('password'))
     this.set('password', hashed)
   }
-})
-
-userSchema.static('metodoNovo', (params: any) => {
-  console.log('params', params)
-  console.log('opaaa')
 })
 
 const UserModel = mongoose.model<UserDoc>('User', userSchema)
